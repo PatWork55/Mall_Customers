@@ -1,135 +1,144 @@
-# Segmentation de clients avec K-Means
+# Customer Segmentation with K-Means Clustering
 
-## Présentation du projet
+## Project Overview
 
-Ce projet a pour objectif de réaliser une segmentation de clients à partir du dataset **Mall Customers**.
+This project focuses on customer segmentation using the **Mall Customers** dataset.
 
-L'approche utilisée est le **clustering non supervisé**, avec l'algorithme **K-Means**.
+The main objective is to identify different groups of customers based on their purchasing behavior using **unsupervised learning**, specifically the **K-Means clustering algorithm**.
 
-L'objectif est d'identifier différents groupes de clients selon leurs comportements, principalement à partir de deux variables :
+The segmentation is mainly based on two variables:
 
-- `Annual_Income` : revenu annuel du client ;
-- `Spending_Score` : score de dépense du client.
+- `Annual_Income`: the customer's annual income;
+- `Spending_Score`: the customer's spending score.
 
-Ce type d'analyse peut aider une entreprise à mieux comprendre sa clientèle et à adapter ses stratégies marketing.
+This type of analysis can help businesses better understand their customers and design more targeted marketing strategies.
 
 ---
 
-## Dataset utilisé
+## Dataset
 
-Le dataset utilisé est **Mall Customers**.
+The dataset used in this project is the **Mall Customers** dataset.
 
-Il contient **200 clients** et **5 colonnes** :
+It contains **200 customers** and **5 columns**:
 
-| Colonne | Description |
+| Column | Description |
 |---|---|
-| `CustomerID` | Identifiant unique du client |
-| `Gender` | Genre du client |
-| `Age` | Âge du client |
-| `Annual_Income` | Revenu annuel du client, en milliers de dollars |
-| `Spending_Score` | Score de dépense du client, entre 1 et 100 |
+| `CustomerID` | Unique customer identifier |
+| `Gender` | Customer gender |
+| `Age` | Customer age |
+| `Annual_Income` | Annual income in thousands of dollars |
+| `Spending_Score` | Spending score between 1 and 100 |
 
-La colonne `CustomerID` n'a pas été utilisée pour le clustering, car elle correspond seulement à un identifiant.
-
----
-
-## Objectif du projet
-
-L'objectif principal est de segmenter les clients en groupes homogènes afin de répondre à la question suivante :
-
-> Peut-on identifier différents profils de clients à partir de leur revenu annuel et de leur score de dépense ?
-
-Cette segmentation peut permettre de :
-
-- mieux comprendre les comportements d'achat ;
-- identifier les clients à forte valeur ;
-- repérer les clients à fort potentiel ;
-- adapter les campagnes marketing selon les profils ;
-- proposer des offres plus personnalisées.
+The `CustomerID` column was not used for clustering because it is only an identifier and does not provide useful behavioral information.
 
 ---
 
-## Analyse exploratoire des données
+## Project Objective
 
-Une première analyse exploratoire a été réalisée afin de comprendre la structure du dataset.
+The main goal of this project is to answer the following question:
 
-### Statistiques principales
+> Can we identify meaningful customer groups based on annual income and spending score?
 
-| Variable | Minimum | Moyenne | Maximum |
+This segmentation can help a business to:
+
+- understand customer behavior;
+- identify high-value customers;
+- detect customers with strong business potential;
+- personalize marketing campaigns;
+- adapt offers according to customer profiles.
+
+---
+
+## Exploratory Data Analysis
+
+An initial exploratory data analysis was performed to understand the structure of the dataset.
+
+### Main Statistics
+
+| Variable | Minimum | Mean | Maximum |
 |---|---:|---:|---:|
 | `Age` | 18 | 38.85 | 70 |
 | `Annual_Income` | 15 | 60.56 | 137 |
 | `Spending_Score` | 1 | 50.20 | 99 |
 
-Le dataset ne contient pas de valeurs manquantes.
+The dataset contains:
 
-Aucun doublon n'a été détecté.
+- 200 rows;
+- 5 columns;
+- no missing values;
+- no duplicated rows.
 
 ---
 
-## Analyse de corrélation
+## Correlation Analysis
 
-Une matrice de corrélation a été calculée sur les variables numériques utiles.
+A correlation matrix was computed to study the linear relationships between the numerical variables.
 
-Les résultats principaux sont les suivants :
+The main correlation values are:
 
-| Variables | Corrélation |
+| Variables | Correlation |
 |---|---:|
 | `Age` / `Annual_Income` | -0.012 |
 | `Age` / `Spending_Score` | -0.327 |
 | `Annual_Income` / `Spending_Score` | 0.010 |
 
-La corrélation entre `Annual_Income` et `Spending_Score` est donc presque nulle.
+The correlation between `Annual_Income` and `Spending_Score` is almost zero.
 
-Cependant, cela ne signifie pas qu'il n'existe pas de structure dans les données.  
-La corrélation mesure une relation linéaire globale, tandis que le clustering cherche des groupes de points proches les uns des autres.
+However, the absence of a strong linear correlation does not mean that there is no structure in the data.
 
-Dans ce projet, même si les variables ne sont pas corrélées linéairement, le nuage de points montre plusieurs groupes distincts.
+Correlation measures a global linear relationship between variables, while clustering looks for groups of observations that are close to each other.
+
+In this project, even though `Annual_Income` and `Spending_Score` are not linearly correlated, the scatter plot shows several distinct groups of customers.
 
 ---
 
-## Variables utilisées pour le clustering
+## Features Used for Clustering
 
-Pour le premier modèle de clustering, deux variables ont été sélectionnées :
+For the first clustering model, two variables were selected:
 
-| Variable | Rôle |
+| Feature | Role |
 |---|---|
-| `Annual_Income` | Représente le niveau de revenu du client |
-| `Spending_Score` | Représente le comportement de dépense du client |
+| `Annual_Income` | Represents the customer's income level |
+| `Spending_Score` | Represents the customer's spending behavior |
 
-Ces deux variables ont été choisies parce qu'elles permettent de visualiser facilement les clusters en deux dimensions.
-
----
-
-## Normalisation des données
-
-Avant d'appliquer K-Means, les deux variables sélectionnées ont été normalisées avec `StandardScaler`.
-
-Cette étape est importante, car K-Means est basé sur les distances.  
-Sans normalisation, une variable avec une échelle plus grande pourrait avoir plus d'influence sur la formation des clusters.
-
-Après normalisation, les variables ont une moyenne proche de `0` et un écart-type proche de `1`.
+These two variables were chosen because they allow a clear two-dimensional visualization of the customer segments.
 
 ---
 
-## Choix du nombre de clusters
+## Data Preprocessing
 
-Le nombre de clusters a été choisi à l'aide de deux méthodes :
+Before applying K-Means, the selected variables were scaled using `StandardScaler`.
 
-1. la méthode du coude ;
-2. le score de silhouette.
+This step is important because K-Means is a distance-based algorithm.
+
+Without scaling, a variable with a larger range could have a stronger influence on the clustering result.
+
+After standardization, both variables have:
+
+- a mean close to 0;
+- a standard deviation close to 1.
 
 ---
 
-## Méthode du coude
+## Choosing the Number of Clusters
 
-La méthode du coude consiste à tester plusieurs valeurs de `k` et à observer l'évolution de l'inertie.
+Two methods were used to choose the number of clusters:
 
-L'inertie mesure la compacité des clusters : plus elle est faible, plus les points sont proches de leur centre de cluster.
+1. the Elbow Method;
+2. the Silhouette Score.
 
-### Résultats de l'inertie
+---
 
-| k | Inertie |
+## Elbow Method
+
+The Elbow Method consists of testing several values of `k` and observing the evolution of inertia.
+
+Inertia measures how compact the clusters are.  
+The lower the inertia, the closer the points are to their cluster centers.
+
+### Inertia Results
+
+| k | Inertia |
 |---:|---:|
 | 1 | 400.000 |
 | 2 | 269.691 |
@@ -142,9 +151,10 @@ L'inertie mesure la compacité des clusters : plus elle est faible, plus les poi
 | 9 | 32.392 |
 | 10 | 29.982 |
 
-La baisse de l'inertie est forte jusqu'à `k = 5`, puis elle devient beaucoup plus faible.
+The inertia decreases strongly until `k = 5`.  
+After that, the decrease becomes much smaller.
 
-La méthode du coude suggère donc de choisir :
+Therefore, the Elbow Method suggests that the best number of clusters is:
 
 ```text
 k = 5
@@ -152,27 +162,31 @@ k = 5
 
 ---
 
-## Entraînement du modèle K-Means
+## K-Means Model
 
-Le modèle final a été entraîné avec les paramètres suivants :
+The final K-Means model was trained with the following parameters:
 
 ```python
 KMeans(n_clusters=5, random_state=42, n_init=10)
 ```
 
-- `n_clusters=5` : nombre de clusters retenu ;
-- `random_state=42` : permet d'avoir des résultats reproductibles ;
-- `n_init=10` : l'algorithme est lancé plusieurs fois avec différentes initialisations, puis conserve le meilleur résultat.
+Parameter explanation:
+
+| Parameter | Meaning |
+|---|---|
+| `n_clusters=5` | The model creates 5 clusters |
+| `random_state=42` | Ensures reproducible results |
+| `n_init=10` | Runs K-Means several times and keeps the best result |
 
 ---
 
-## Résultats finaux du clustering
+## Final Clustering Results
 
-Le modèle K-Means a identifié **5 segments de clients**.
+The K-Means model identified **5 customer segments**.
 
-### Répartition des clients par cluster
+### Number of Customers per Cluster
 
-| Cluster | Nombre de clients |
+| Cluster | Number of Customers |
 |---:|---:|
 | 0 | 81 |
 | 1 | 39 |
@@ -180,13 +194,13 @@ Le modèle K-Means a identifié **5 segments de clients**.
 | 3 | 35 |
 | 4 | 23 |
 
-Le cluster le plus important est le **cluster 0**, avec 81 clients.
+The largest cluster is **Cluster 0**, with 81 customers.
 
 ---
 
-## Profil moyen des clusters
+## Average Profile of Each Cluster
 
-| Cluster | Âge moyen | Revenu annuel moyen | Score de dépense moyen | Nombre de clients |
+| Cluster | Average Age | Average Annual Income | Average Spending Score | Number of Customers |
 |---:|---:|---:|---:|---:|
 | 0 | 42.72 | 55.30 | 49.52 | 81 |
 | 1 | 32.69 | 86.54 | 82.13 | 39 |
@@ -194,16 +208,16 @@ Le cluster le plus important est le **cluster 0**, avec 81 clients.
 | 3 | 41.11 | 88.20 | 17.11 | 35 |
 | 4 | 45.22 | 26.30 | 20.91 | 23 |
 
-L'âge n'a pas été utilisé pour construire les clusters.  
-Il est utilisé après coup pour mieux interpréter les profils obtenus.
+The `Age` variable was not used to build the clusters.  
+It was only used after clustering to better interpret the customer profiles.
 
 ---
 
-## Centroïdes des clusters
+## Cluster Centroids
 
-Les centroïdes représentent les centres moyens des clusters.
+The centroids represent the average position of each cluster.
 
-| Cluster | Revenu annuel moyen du centroïde | Score de dépense moyen du centroïde |
+| Cluster | Centroid Annual Income | Centroid Spending Score |
 |---:|---:|---:|
 | 0 | 55.30 | 49.52 |
 | 1 | 86.54 | 82.13 |
@@ -211,154 +225,156 @@ Les centroïdes représentent les centres moyens des clusters.
 | 3 | 88.20 | 17.11 |
 | 4 | 26.30 | 20.91 |
 
-Ces centroïdes confirment que les clusters sont principalement structurés autour de deux dimensions :
+These centroids confirm that the customer groups are mainly structured around two dimensions:
 
-- niveau de revenu ;
-- niveau de dépense.
+- income level;
+- spending behavior.
 
 ---
 
-## Interprétation métier des clusters
+## Business Interpretation of the Clusters
 
-Les clusters ont été renommés afin de faciliter leur interprétation métier.
+The clusters were renamed to make their interpretation easier from a business perspective.
 
-| Cluster | Nom du segment | Description |
+| Cluster | Segment Name | Description |
 |---:|---|---|
-| 0 | Clients standards / équilibrés | Clients avec un revenu moyen et un score de dépense moyen |
-| 1 | Clients premium à forte valeur | Clients avec un revenu élevé et un score de dépense élevé |
-| 2 | Jeunes dépensiers à petit revenu | Clients plutôt jeunes, avec un faible revenu mais un score de dépense élevé |
-| 3 | Clients aisés mais prudents | Clients avec un revenu élevé mais un faible score de dépense |
-| 4 | Clients économes à faible revenu | Clients avec un faible revenu et un faible score de dépense |
+| 0 | Standard / Balanced Customers | Customers with average income and average spending score |
+| 1 | High-Value Premium Customers | Customers with high income and high spending score |
+| 2 | Young Low-Income Big Spenders | Young customers with low income but high spending score |
+| 3 | Wealthy but Careful Customers | Customers with high income but low spending score |
+| 4 | Low-Income Conservative Customers | Customers with low income and low spending score |
 
 ---
 
-## Analyse détaillée des segments
+## Detailed Segment Analysis
 
-### Cluster 0 — Clients standards / équilibrés
+### Cluster 0 — Standard / Balanced Customers
 
-Ce groupe contient **81 clients**.
+This cluster contains **81 customers**.
 
-Ces clients ont :
+Average profile:
 
-- un âge moyen de 42.72 ans ;
-- un revenu annuel moyen de 55.30k$ ;
-- un score de dépense moyen de 49.52.
+- average age: 42.72 years;
+- average annual income: 55.30k$;
+- average spending score: 49.52.
 
-Ils représentent le segment le plus important du dataset.  
-Ce sont des clients avec un comportement moyen, sans profil extrême.
-
-Ils peuvent être considérés comme une base stable de clientèle.
+These customers have a balanced profile.  
+They represent the largest group in the dataset and can be considered a stable customer base.
 
 ---
 
-### Cluster 1 — Clients premium à forte valeur
+### Cluster 1 — High-Value Premium Customers
 
-Ce groupe contient **39 clients**.
+This cluster contains **39 customers**.
 
-Ces clients ont :
+Average profile:
 
-- un âge moyen de 32.69 ans ;
-- un revenu annuel moyen de 86.54k$ ;
-- un score de dépense moyen de 82.13.
+- average age: 32.69 years;
+- average annual income: 86.54k$;
+- average spending score: 82.13.
 
-Ce segment est très intéressant d'un point de vue marketing.  
-Ces clients ont à la fois un revenu élevé et une forte tendance à dépenser.
+This is one of the most valuable customer segments.
 
-Ils peuvent être ciblés avec :
+These customers have both high income and high spending behavior.
 
-- des offres premium ;
-- des programmes de fidélité ;
-- des services personnalisés ;
-- des avantages exclusifs.
+They could be targeted with:
 
----
-
-### Cluster 2 — Jeunes dépensiers à petit revenu
-
-Ce groupe contient **22 clients**.
-
-Ces clients ont :
-
-- un âge moyen de 25.27 ans ;
-- un revenu annuel moyen de 25.73k$ ;
-- un score de dépense moyen de 79.36.
-
-Ce segment regroupe des clients plutôt jeunes qui dépensent beaucoup malgré un revenu faible.
-
-Ils peuvent être intéressants pour :
-
-- des offres accessibles ;
-- des promotions ;
-- des campagnes orientées jeunes consommateurs ;
-- des produits tendance ou attractifs.
+- premium offers;
+- loyalty programs;
+- personalized services;
+- exclusive benefits.
 
 ---
 
-### Cluster 3 — Clients aisés mais prudents
+### Cluster 2 — Young Low-Income Big Spenders
 
-Ce groupe contient **35 clients**.
+This cluster contains **22 customers**.
 
-Ces clients ont :
+Average profile:
 
-- un âge moyen de 41.11 ans ;
-- un revenu annuel moyen de 88.20k$ ;
-- un score de dépense moyen de 17.11.
+- average age: 25.27 years;
+- average annual income: 25.73k$;
+- average spending score: 79.36.
 
-Ce segment dispose d'un revenu élevé, mais dépense peu.
+This segment includes younger customers who spend a lot despite having a lower income.
 
-Ces clients représentent un potentiel commercial important, mais ils semblent moins engagés.
+They could be targeted with:
 
-Ils pourraient être ciblés avec :
-
-- des campagnes personnalisées ;
-- des offres de découverte ;
-- des recommandations adaptées ;
-- des actions visant à comprendre leurs freins à l'achat.
+- affordable offers;
+- discounts;
+- trend-based products;
+- youth-oriented marketing campaigns.
 
 ---
 
-### Cluster 4 — Clients économes à faible revenu
+### Cluster 3 — Wealthy but Careful Customers
 
-Ce groupe contient **23 clients**.
+This cluster contains **35 customers**.
 
-Ces clients ont :
+Average profile:
 
-- un âge moyen de 45.22 ans ;
-- un revenu annuel moyen de 26.30k$ ;
-- un score de dépense moyen de 20.91.
+- average age: 41.11 years;
+- average annual income: 88.20k$;
+- average spending score: 17.11.
 
-Ce segment regroupe des clients à faible revenu et faible score de dépense.
+These customers have high income but low spending behavior.
 
-Ils peuvent être ciblés avec :
+They represent an important business potential, but they are currently less engaged.
 
-- des offres économiques ;
-- des réductions ;
-- des promotions adaptées ;
-- des produits d'entrée de gamme.
+They could be targeted with:
+
+- personalized recommendations;
+- discovery offers;
+- premium product trials;
+- campaigns designed to understand their purchase barriers.
 
 ---
 
-## Évaluation avec le score de silhouette
+### Cluster 4 — Low-Income Conservative Customers
 
-Le score de silhouette permet d'évaluer la qualité d'un clustering.
+This cluster contains **23 customers**.
 
-Il mesure si les points sont proches des autres points de leur cluster et éloignés des points des autres clusters.
+Average profile:
 
-Le score varie entre `-1` et `1` :
+- average age: 45.22 years;
+- average annual income: 26.30k$;
+- average spending score: 20.91.
 
-| Score | Interprétation |
+These customers have both low income and low spending score.
+
+They could be targeted with:
+
+- budget-friendly offers;
+- discounts;
+- entry-level products;
+- promotional campaigns.
+
+---
+
+## Clustering Evaluation
+
+The clustering quality was evaluated using the **Silhouette Score**.
+
+The Silhouette Score measures whether each point is:
+
+- close to the points in its own cluster;
+- far from the points in other clusters.
+
+The score ranges from `-1` to `1`.
+
+| Score Range | Interpretation |
 |---|---|
-| Proche de 1 | Clusters bien séparés |
-| Proche de 0 | Clusters qui se chevauchent |
-| Proche de -1 | Mauvaise affectation des points |
+| Close to 1 | Well-separated clusters |
+| Close to 0 | Overlapping clusters |
+| Close to -1 | Poor cluster assignment |
 
 ---
 
-## Résultats du score de silhouette
+## Silhouette Score Results
 
-Les scores de silhouette ont été calculés pour plusieurs valeurs de `k`.
+The Silhouette Score was computed for several values of `k`.
 
-| k | Score de silhouette |
+| k | Silhouette Score |
 |---:|---:|
 | 2 | 0.321 |
 | 3 | 0.467 |
@@ -370,54 +386,52 @@ Les scores de silhouette ont été calculés pour plusieurs valeurs de `k`.
 | 9 | 0.457 |
 | 10 | 0.443 |
 
-Le meilleur score est obtenu pour :
+The best Silhouette Score is obtained for:
 
 ```text
 k = 5
 ```
 
-Avec un score de silhouette de :
+with a score of approximately:
 
 ```text
 0.555
 ```
 
-Ce résultat confirme le choix obtenu avec la méthode du coude.
+This confirms the result obtained with the Elbow Method.
 
 ---
 
-## Conclusion sur le choix de k
+## Final Choice of k
 
-Les deux méthodes utilisées donnent un résultat cohérent :
+Both methods lead to the same conclusion:
 
-| Méthode | Résultat |
-|---|---|
-| Méthode du coude | k = 5 |
-| Score de silhouette | k = 5 |
+| Method | Suggested Number of Clusters |
+|---|---:|
+| Elbow Method | 5 |
+| Silhouette Score | 5 |
 
-Le choix final retenu est donc :
+The final model therefore uses:
 
 ```text
 k = 5
 ```
 
-Cela signifie que la segmentation finale contient cinq groupes de clients.
-
 ---
 
-## Technologies utilisées
+## Technologies Used
 
-Le projet a été réalisé avec Python et les bibliothèques suivantes :
+This project was developed with Python and the following libraries:
 
-| Bibliothèque | Utilisation |
+| Library | Usage |
 |---|---|
-| `pandas` | Chargement, manipulation et analyse des données |
-| `matplotlib` | Visualisation des données |
-| `scikit-learn` | Normalisation, K-Means et score de silhouette |
+| `pandas` | Data loading, cleaning and analysis |
+| `matplotlib` | Data visualization |
+| `scikit-learn` | Feature scaling, K-Means clustering and evaluation |
 
 ---
 
-## Structure du projet
+## Project Structure
 
 ```text
 .
@@ -427,90 +441,89 @@ Le projet a été réalisé avec Python et les bibliothèques suivantes :
 
 ---
 
-## Comment exécuter le projet
+## How to Run the Project
 
-1. Cloner le dépôt :
+1. Clone the repository:
 
 ```bash
-git clone <url-du-repo>
+git clone <repository-url>
 ```
 
-2. Ouvrir le notebook :
+2. Open the notebook:
 
 ```text
 Mall_Customers.ipynb
 ```
 
-3. Exécuter les cellules dans l'ordre.
+3. Run the cells in order.
 
-Le notebook contient toutes les étapes du projet :
+The notebook contains the complete workflow:
 
-- chargement des données ;
-- analyse exploratoire ;
-- normalisation ;
-- entraînement du modèle ;
-- évaluation ;
-- interprétation des résultats.
-
----
-
-## Résumé final
-
-Ce projet a permis de construire une segmentation de clients avec l'algorithme K-Means.
-
-Le dataset contient 200 clients et plusieurs variables descriptives.  
-Après analyse exploratoire, les variables `Annual_Income` et `Spending_Score` ont été retenues pour réaliser le clustering.
-
-Même si ces deux variables ne sont presque pas corrélées linéairement, elles permettent de former des groupes bien distincts.  
-Cela montre que l'absence de corrélation ne signifie pas forcément absence de structure.
-
-La méthode du coude et le score de silhouette ont tous deux confirmé que le meilleur choix était de retenir **5 clusters**.
-
-Le modèle final permet d'identifier cinq profils clients :
-
-1. clients standards / équilibrés ;
-2. clients premium à forte valeur ;
-3. jeunes dépensiers à petit revenu ;
-4. clients aisés mais prudents ;
-5. clients économes à faible revenu.
-
-Le score de silhouette final est d'environ **0.555**, ce qui indique une qualité de clustering correcte pour un modèle simple utilisant seulement deux variables.
-
-Cette segmentation peut servir de base à des décisions marketing, notamment pour adapter les offres, cibler les bons profils et mieux comprendre les comportements d'achat.
+- data loading;
+- exploratory data analysis;
+- data preprocessing;
+- feature scaling;
+- cluster selection;
+- K-Means training;
+- cluster interpretation;
+- clustering evaluation.
 
 ---
 
-## Limites du projet
+## Key Takeaways
 
-Cette analyse présente plusieurs limites :
+This project shows that customer segmentation can be performed even without a target variable.
 
-- seules deux variables ont été utilisées pour construire les clusters ;
-- l'âge et le genre n'ont pas été intégrés dans le modèle final ;
-- les noms donnés aux clusters sont des interprétations métier ;
-- K-Means suppose que les clusters sont relativement compacts ;
-- les résultats pourraient changer avec d'autres variables ou d'autres algorithmes.
+The analysis also highlights an important point:
 
----
+> A lack of linear correlation does not necessarily mean a lack of structure.
 
-## Pistes d'amélioration
+In this dataset, `Annual_Income` and `Spending_Score` are almost not correlated, but they still form clear customer groups.
 
-Pour aller plus loin, il serait possible de :
-
-- intégrer l'âge dans le clustering ;
-- encoder la variable `Gender` ;
-- comparer K-Means avec DBSCAN ;
-- comparer K-Means avec le clustering hiérarchique ;
-- créer des visualisations plus professionnelles ;
-- sauvegarder les graphiques dans un dossier `images/` pour les afficher directement dans le README ;
-- construire des recommandations marketing détaillées pour chaque segment.
+K-Means successfully identified five meaningful customer segments that can be used for marketing analysis and business decision-making.
 
 ---
 
-## Conclusion générale
+## Limitations
 
-Ce projet montre comment utiliser le clustering pour analyser une base de clients sans variable cible.
+This project has some limitations:
 
-K-Means a permis d'identifier cinq segments distincts à partir du revenu annuel et du score de dépense.  
-Les résultats obtenus sont cohérents, interprétables et exploitables d'un point de vue métier.
+- only two variables were used for clustering;
+- `Age` and `Gender` were not included in the final model;
+- the cluster names are business interpretations, not official labels;
+- K-Means assumes compact and roughly spherical clusters;
+- the results may change if more variables or other algorithms are used.
 
-Le projet constitue donc une bonne introduction à l'apprentissage non supervisé et à la segmentation client.
+---
+
+## Possible Improvements
+
+Future improvements could include:
+
+- adding `Age` to the clustering process;
+- encoding and using the `Gender` variable;
+- comparing K-Means with DBSCAN;
+- comparing K-Means with hierarchical clustering;
+- creating more advanced visualizations;
+- saving plots in an `images/` folder and displaying them in this README;
+- building marketing recommendations for each customer segment.
+
+---
+
+## General Conclusion
+
+This project demonstrates how unsupervised learning can be used to segment customers based on their behavior.
+
+Using only annual income and spending score, the K-Means algorithm identified five clear customer profiles:
+
+1. Standard / Balanced Customers;
+2. High-Value Premium Customers;
+3. Young Low-Income Big Spenders;
+4. Wealthy but Careful Customers;
+5. Low-Income Conservative Customers.
+
+The final choice of `k = 5` was validated by both the Elbow Method and the Silhouette Score.
+
+The final Silhouette Score is approximately **0.555**, which indicates a reasonable clustering quality for a simple two-feature model.
+
+Overall, this project provides a clear introduction to customer segmentation, clustering evaluation and business interpretation of unsupervised learning results.
